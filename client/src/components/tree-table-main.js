@@ -2,15 +2,9 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {GetTreeData} from '../redux/actions';
 import {Table} from 'reactstrap';
+import TableCell from './table-cell-component';
 
 class TreeTableMain extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-        viewRows: [],
-       viewColumns: [],
-    }
-  }
   componentDidMount() {
     const {GetTreeData} = this.props;
     GetTreeData();
@@ -32,36 +26,18 @@ class TreeTableMain extends Component {
     }
   }
 
-  createColumn = (column, i) => {
-    this.setState({
-      viewColumns: column.children,
-    });
-    return <td key={i}>{"Level: " + column.level + ": Data: " + column.data}</td>
-  }
-
-  createRow = (rowData, index) => {
-    const {viewRows} = this.state;
-    if (rowData && rowData.length) {
-      viewRows.push(
-          <tr key={index}>
-            {rowData.map((item, i) => {
-                return this.createColumn(item, i);
-              })
-            }
-          </tr>
-      );
-      this.setState({viewRows})
-    }
-  };
-
-  componentDidUpdate(preProps) {
-    if (preProps.treeData !== this.props.treeData && this.props.treeData.data) {
-      this.createRow(this.props.treeData.data, 0);
-    }
-  }
-
   render() {
-    const {viewRows} = this.state;
+    const {treeData} = this.props;
+    const keys = Object.keys(treeData);
+    const rows = [];
+    keys.forEach((item, i) => {
+     rows.push(<tr key={i}>
+       {treeData[item].map((column, index) => {
+         return <TableCell key={index} data={column} />
+       })}
+     </tr>)
+    });
+
     return (
         <div>
           <h2>Pattern</h2>
@@ -71,7 +47,7 @@ class TreeTableMain extends Component {
           <h2>Tree view</h2>
           <Table bordered>
             <tbody>
-              {viewRows}
+            {rows}
             </tbody>
           </Table>
         </div>
