@@ -26,14 +26,31 @@ class TreeTableMain extends Component {
     }
   }
 
+  getMaxLength = (data) => {
+    let longest = 0;
+    const keys = Object.keys(data);
+    keys.forEach((item) => {
+        if (data[item].length > longest) {
+          longest = data[item].length;
+        }
+    });
+    return longest;
+  };
+
   render() {
     const {treeData} = this.props;
     const keys = Object.keys(treeData);
     const rows = [];
+    const maxLength = this.getMaxLength(treeData);
     keys.forEach((item, i) => {
      rows.push(<tr key={i}>
        {treeData[item].map((column, index) => {
-         return <TableCell key={index} data={column} />
+         let colspan = 0;
+         if (index%2 !== 0)
+           colspan = Math.floor(maxLength / treeData[item].length);
+         else
+           colspan = Math.ceil(maxLength / treeData[item].length);
+         return <TableCell colspan={colspan} key={index} data={column} />
        })}
      </tr>)
     });
